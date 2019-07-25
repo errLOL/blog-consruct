@@ -47,4 +47,34 @@ class UserController extends BasicController
             'name', 'surname', 'login', 'nameErr', 'surnameErr', 'loginErr', 'passwordErr'
         ));
     }
+
+    public function logInAction()
+    {
+        if ($this->request->is_post()) {
+            $login =  $this->request->post('login');
+            $password =  $this->request->post('password');
+
+            $mUser = new UsersModel(
+                new DBDriver(DB::getConnect()),
+                new Validator()
+            );
+            try {
+                $user = new User($mUser);
+                $user->logIn($this->request->post());
+                $this->redirect();
+            } catch (InvalidDataException $e) {
+                $loginErr = $e->getErrors()['login'] ?? '';
+                $passwordErr = $e->getErrors()['password'] ?? '';
+            }
+        } else {
+            $login = '';
+            $password = '';
+            $loginErr = '';
+            $passwordErr = '';
+        }
+        $this->title = 'Войти';
+        $this->content = $this->build('v_signup', compact(
+            'name', 'surname', 'login', 'nameErr', 'surnameErr', 'loginErr', 'passwordErr'
+        ));
+    }
 }
