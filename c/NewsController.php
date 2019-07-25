@@ -18,7 +18,7 @@ class NewsController extends BasicController
             new DBDriver(DB::getConnect()),
             new Validator()
         );
-        $post = $mpost->getOnce($id);
+        $post = $mpost->getOnce(['id_news' => $id]);
 
         if(empty($post)) {
             throw new ErrorNotFoundException();  
@@ -57,7 +57,6 @@ class NewsController extends BasicController
         else {
             $title = '';
             $text = '';
-            //$error = '';
             $titleErr = '';
             $textErr = '';
         }

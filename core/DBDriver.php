@@ -34,6 +34,7 @@ class DBDriver
 
     public function select($sql, $params = [], $fetch)
     {
+        
         $query = $this->query($sql, $params);
         if($fetch == self::FETCH_ALL) {
             return $query->fetchAll(\PDO::FETCH_ASSOC);

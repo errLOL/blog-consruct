@@ -23,17 +23,20 @@ abstract class BasicModel
         return $this->dbdriver->select($sql, [], 'all');
     }
 
-    public function getOnce($id)
+    public function getOnce($param)
     {
-        $sql = sprintf('SELECT * FROM %s WHERE id_news = :id', $this->table);
-        return $this->dbdriver->select($sql, ['id' => $id], 'one');
+        $where = key($param) . '= :' . key($param);
+        $sql = sprintf('SELECT * FROM %s WHERE %s', $this->table, $where);
+        return $this->dbdriver->select($sql, $param, 'one');
     }
 
-    public function add(array $arr)
+    public function add(array $arr, $needValidate = true)
     {
-        $this->validator->execute($arr);
-        if(!$this->validator->success) {
-            throw new InvalidDataException($this->validator->errors);
+        if ($needValidate) {
+            $this->validator->execute($arr);
+            if(!$this->validator->success) {
+                throw new InvalidDataException($this->validator->errors);
+            }
         }
         return $this->dbdriver->insert($this->table, $arr);
     }
