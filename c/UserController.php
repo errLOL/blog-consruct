@@ -5,7 +5,9 @@ use core\DB;
 use core\DBDriver;
 use core\Validator;
 use core\User;
+use core\Response;
 use model\UsersModel;
+use model\SessionModel;
 use core\Exception\InvalidDataException;
 use core\Exception\ErrorNotFoundException;
 
@@ -23,8 +25,12 @@ class UserController extends BasicController
                 new DBDriver(DB::getConnect()),
                 new Validator()
             );
+            $mSession = new SessionModel(
+                new DBDriver(DB::getConnect()),
+                new Validator()
+            );
             try {
-                $user = new User($mUser);
+                $user = new User($mUser, $mSession, new Response($_GET, $_POST, $_COOKIE, $_FILES, $_SESSION));
                 $user->signUp($this->request->post());
                 $this->redirect();
             } catch (InvalidDataException $e) {
@@ -52,14 +58,17 @@ class UserController extends BasicController
     {
         if ($this->request->is_post()) {
             $login =  $this->request->post('login');
-            $password =  $this->request->post('password');
 
             $mUser = new UsersModel(
                 new DBDriver(DB::getConnect()),
                 new Validator()
             );
+            $mSession = new SessionModel(
+                new DBDriver(DB::getConnect()),
+                new Validator()
+            );
             try {
-                $user = new User($mUser);
+                $user = new User($mUser, $mSession, new Response($_GET, $_POST, $_COOKIE, $_FILES, $_SESSION));
                 $user->logIn($this->request->post());
                 $this->redirect();
             } catch (InvalidDataException $e) {
@@ -68,13 +77,12 @@ class UserController extends BasicController
             }
         } else {
             $login = '';
-            $password = '';
             $loginErr = '';
             $passwordErr = '';
         }
         $this->title = 'Войти';
-        $this->content = $this->build('v_signup', compact(
-            'name', 'surname', 'login', 'nameErr', 'surnameErr', 'loginErr', 'passwordErr'
+        $this->content = $this->build('v_login', compact(
+            'login', 'loginErr', 'passwordErr'
         ));
     }
 }

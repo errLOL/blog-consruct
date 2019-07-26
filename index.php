@@ -8,6 +8,7 @@ function myAutoloader($classname) {
 	include_once(__DIR__ . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $classname) . '.php');
 }
 
+
 try {
     $app = new Application();
     $app->run();

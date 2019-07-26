@@ -52,7 +52,7 @@ class UsersModel extends BasicModel
     public function signUp(array $field)
     {
         $this->validator->execute($field);
-        if($this->checkUniqueLogin($field['login'])) {
+        if($this->getByLogin($field['login'])) {
             $this->validator->success = false;
             $this->validator->errors['login'][] = sprintf('Username %s is already taken.', $field['login']);
         }
@@ -64,7 +64,7 @@ class UsersModel extends BasicModel
         }
     }
 
-    private function checkUniqueLogin($login)
+    public function getByLogin($login)
     {
         return $this->getOnce(['login' => $login]);
     }
