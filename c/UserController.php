@@ -68,7 +68,7 @@ class UserController extends BasicController
                 new Validator()
             );
             try {
-                $user = new User($mUser, $mSession, new Response($_GET, $_POST, $_COOKIE, $_FILES, $_SESSION));
+                $user = new User($mUser, $mSession);
                 $user->logIn($this->request->post());
                 $this->redirect();
             } catch (InvalidDataException $e) {

@@ -3,7 +3,8 @@
 namespace core;
 use model\UsersModel;
 use model\SessionModel;
-use core\Response;
+use core\Session;
+use core\Cookie;
 use core\Request;
 use core\Exception\InvalidDataException;
 
@@ -11,12 +12,10 @@ class User
 {
     private $mUser;
     private $mSession;
-    private $response;
 
-    public function __construct(UsersModel $mUser, SessionModel $mSession, Response $response) {
+    public function __construct(UsersModel $mUser, SessionModel $mSession) {
         $this->mUser = $mUser;
         $this->mSession = $mSession;
-        $this->response = $response;
     }
 
     public function signUp(array $fields)
@@ -33,19 +32,19 @@ class User
             throw new InvalidDataException(['password' => 'Incorrect password']);
         }
         $uniqueNumber = uniqid();
-        $this->response->withSession('sid', $uniqueNumber);
+        Session::setSession('sid', $uniqueNumber);
         $this->mSession->setSession($user['id_user'], $uniqueNumber);
 
         if ($fields['remember'] ?? false) {
-            $this->response->withCookie('remember', 'true');
+            Cookie::setCookie('remember', 'true');
         }
     }
 
     public function isAuth(Request $request)
     {
-        if($request->session('sid') ?? && $this->sessionModel->getBySid($request->session('sid')) {
+        if($request->session('sid') && $this->sessionModel->getBySid($request->session('sid'))) {
             return true;
-        } elseif ($request->cookie('remember') ??) {
+        } elseif ($request->cookie('remember')) {
             return true;
         }
     }

@@ -31,10 +31,10 @@ class Response
     {
         return $this->post[$key] = $value;
     }
-    public function withCookie($name, $value, $time = 24*31*24, $options = [])
+    public function withCookie($name, $value, $time = 24*31*24)
     {
         $time = time()+60*60*$time;
-        setcookie($name, $value, $time, $options);
+        setcookie($name, $value, $time);
     }
     public function withFiles($key = null)
     {
@@ -42,7 +42,7 @@ class Response
     }
     public function withSession($key, $value)
     {
-        return $this->session[$key] = $value;
+        return $this->session['$key'] = '$value';
     }
 
 }
