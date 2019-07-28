@@ -59,7 +59,7 @@ class UsersModel extends BasicModel
         if(!$this->validator->success) {
             throw new InvalidDataException($this->validator->errors);
         }else {
-            $field['password'] = password_hash($field['password'], PASSWORD_ARGON2I);
+            $field['password'] = $this->password_hash($field['password']);
             return $this->add($field, false);
         }
     }
@@ -67,6 +67,11 @@ class UsersModel extends BasicModel
     public function getByLogin($login)
     {
         return $this->getOnce(['login' => $login]);
+    }
+
+    public function password_hash($password)
+    {
+        return password_hash($password, PASSWORD_ARGON2I);
     }
 
 }

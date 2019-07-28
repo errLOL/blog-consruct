@@ -36,8 +36,11 @@ class User
         $this->mSession->setSession($user['id_user'], $uniqueNumber);
 
         if ($fields['remember'] ?? false) {
-            Cookie::setCookie('remember', 'true');
+            Cookie::setCookie('login', $fields['login']);
+            Cookie::setCookie('password', $fields['password']);
         }
+
+        return true;
     }
 
     public function isAuth(Request $request)
