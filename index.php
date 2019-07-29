@@ -9,27 +9,19 @@ function myAutoloader($classname) {
 	include_once(__DIR__ . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $classname) . '.php');
 }
 $router = new Router();
-$router->addRoute('', function () {
-    echo 'Main page!';
-});
 
-$router->addRoute('super/some/route', function () {
-    echo 'Some Route!!!';
+$router->get('post/edit/:name', function($name) {
+	echo 'post/get/, ' . $name . '!';
 });
-
-/* $router->get('post/add', function () {
-    echo 'Зарос сделан методом GET!!!!';
+$router->get('post/:name', function($name) {
+	echo 'post/' . $name . '!';
 });
-
-$router->post('post/add', function () {
-    echo 'Зарос сделан методом POST!!!!';
-}); */
-$router->get('hello/:name', function($name) {
-	echo 'Hello, ' . $name . '!';
+$router->get('/', function() {
+	echo 'hello' . '!';
 });
-
 try {
     $app = new Application();
+    $router->run();
     $app->run();
 }
 catch (core\Exception\ErrorNotFoundException $e) {

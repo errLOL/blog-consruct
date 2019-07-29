@@ -2,58 +2,58 @@
 
 namespace core;
 
-//use core\Exception\ErrorNotFoundException;
+use core\Exception\ErrorNotFoundException;
 
 class Router
 {
     private $routeCollection = [];
 
-    public function addRoute($name, \Closure $closure)
-    {
-        $this->routeCollection[ROOT . $name] = $closure;
-    }
-
     public function run()
     {
-        $uri = $_SERVER['REQUEST_URI'];
-
-        if(!isset($this->routeCollection[$uri])) {
-            //throw new Exception\ErrorNotFoundException();
-            die('404');
+        $method = $_SERVER['REQUEST_METHOD'];
+        $router = $this->routeCollection[$method];
+        $uri = str_replace(ROOT , '' , $_SERVER['REQUEST_URI']);
+        $uriParts = explode('/', $uri);
+        $src = '';
+        $countParts = count($uriParts);
+        $flag = false;
+        
+        for ($i=0; $i < count($uriParts); $i++) {
+            $src .= $uriParts[$i] . '/';
+            $countParts--;
+            if (!isset($router[$src])) {
+                unset($uriParts[$i]);
+                continue;
+            }elseif($router[$src]['params'] == $countParts) {
+                unset($uriParts[$i]);
+                $callback = $router[$src]['callback'];
+                $flag = true;
+                break;
+            }else {
+                unset($uriParts[$i]);
+            }
         }
-        $this->routeCollection[$uri]();
+
+        if(!$flag) {
+            throw new ErrorNotFoundException();
+        }
+        call_user_func_array($callback, $uriParts);
     }
 
     public function get($name, \Closure $closure)
     {
         $uri = explode(':', $name);
-        $length = iconv_strlen(ROOT . $uri[0]);
-        if(substr($_SERVER['REQUEST_URI'],0,$length) == ROOT . $uri[0]) {
-            $name = str_replace(ROOT . $uri[0], '', $_SERVER['REQUEST_URI']);
-            $name = str_word_count($name,1)[0];
-            $uri[1] = $name;
-            $uri = implode('', $uri);
-            if ($_SERVER['REQUEST_URI'] == ROOT . $uri) {
-                call_user_func($closure, $name);
-            }
-            //$this->addRoute($uri, $closure);
-            //var_dump($this->routeCollection[$uri]);
-            
-        }
+        $this->routeCollection['GET'][$uri[0]] = [
+            'callback' => $closure,
+            'params' => count($uri) - 1
+        ];
     }
-
-    /* public function post($name, \Closure $closure)
+    public function post($name, \Closure $closure)
     {
-        $this->routeCollection[ROOT . $name] = $closure;
-        if(!empty($_POST)) {
-            $this->run();
-        }
+        $uri = explode(':', $name);
+        $this->routeCollection['POST'][$uri[0]] = [
+            'callback' => $closure,
+            'params' => count($uri) - 1
+        ];
     }
-    public function get($name, \Closure $closure)
-    {
-        $this->routeCollection[ROOT . $name] = $closure;
-        if(empty($_POST)) {
-            $this->run();
-        }
-    } */
 }
