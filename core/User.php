@@ -27,9 +27,9 @@ class User
     {
         $user = $this->mUser->getByLogin($fields['login']);
         if (!$user) {
-           throw new InvalidDataException(['login' => 'User not found']);
+           throw new InvalidDataException(['login' => ['User not found']]);
         } elseif (!password_verify($fields['password'], $user['password'])) {
-            throw new InvalidDataException(['password' => 'Incorrect password']);
+            throw new InvalidDataException(['password' => ['Incorrect password']]);
         }
         $uniqueNumber = uniqid();
         Session::setSession('sid', $uniqueNumber);

@@ -118,7 +118,10 @@ a.mouse_scroll:focus{outline:none;}
     top: 0;
     right: 0;
 }
-.error {
+input.error {
+    border: 3px solid red;
+}
+.error_message {
     color: red;
 }
 .wheel{margin:5px auto;position:relative;height:4px;width:4px;border:2px solid #ffffff;-webkit-border-radius:8px;border-radius:8px;}
