@@ -6,7 +6,7 @@ use core\Request;
 
 abstract class Form
 {
-    protected $fields;
+    public $fields;
     protected $method;
     protected $action;
     protected $formName;

@@ -4,13 +4,22 @@ namespace core;
 use core\Exception\ErrorNotFoundException;
 use core\Request;
 use c\HomeController;
+use Box\Container;
+use Box\ModelsFactorie;
+use Box\DBDriverSingle;
+use Box\UserSingle;
 
 class Application
 {
     public $controller;
     public $action;
+    public $container;
 
-    public function __construct() {
+    public function __construct(Container $container) {
+        $this->container = $container;
+        $this->container->register(new DBDriverSingle());
+        $this->container->register(new ModelsFactorie());
+        $this->container->register(new UserSingle());
         $this->urlProcessing();
     }
    
@@ -36,9 +45,10 @@ class Application
         }
         
         $controller = sprintf('c\%sController', $controller);
-        $controller = new $controller(new Request($_GET, $_POST, $_SERVER, $_COOKIE, $_FILES, $_SESSION));
+        $controller = new $controller(new Request($_GET, $_POST, $_SERVER, $_COOKIE, $_FILES, $_SESSION), $this->container);
         $controller->$action();
         $controller->render();
+        
         return $controller;
     }
 

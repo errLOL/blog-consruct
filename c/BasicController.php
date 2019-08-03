@@ -3,6 +3,7 @@
 namespace c;
 use core\Request;
 use core\Exception\ErrorNotFoundException;
+use Box\Container;
 
 abstract class BasicController
 {
@@ -12,12 +13,14 @@ abstract class BasicController
     protected $is_auth;
     protected $request;
 
-    public function __construct(Request $request = null) {
+    public function __construct(Request $request = null, Container $container = null) {
         $this->title = 'Главная';
         $this->content = '';
+
         $this->is_admin = true;//$this->is_admin();
         $this->is_auth = true;//$this->is_auth();
         $this->request = $request;
+        $this->container = $container;
     }
 
     public function __call($name, $params)

@@ -1,13 +1,9 @@
 <?php
 
 namespace c;
-use core\DB;
-use core\DBDriver;
-use core\Validator;
 use core\User;
 use core\Request;
-use model\UsersModel;
-use model\SessionModel;
+use Box\Container;
 use core\Exception\InvalidDataException;
 use core\Exception\ErrorNotFoundException;
 use core\Forms\FormBuilder;
@@ -21,16 +17,8 @@ class UserController extends BasicController
         $form = new SignUp();
         $formBuilder = new FormBuilder($form);
         if ($this->request->is_post()) {
-            $mUser = new UsersModel(
-                new DBDriver(DB::getConnect()),
-                new Validator()
-            );
-            $mSession = new SessionModel(
-                new DBDriver(DB::getConnect()),
-                new Validator()
-            );
             try {
-                $user = new User($mUser, $mSession);
+                $user = $this->container->get('user');
                 $handled = $form->handleRequest($this->request);
                 $user->signUp($handled);
                 $this->redirect();
@@ -49,16 +37,10 @@ class UserController extends BasicController
         $formBuilder = new FormBuilder($form);
         if ($this->request->is_post()) {
             $login =  $this->request->post('login');
-            $mUser = new UsersModel(
-                new DBDriver(DB::getConnect()),
-                new Validator()
-            );
-            $mSession = new SessionModel(
-                new DBDriver(DB::getConnect()),
-                new Validator()
-            );
+            $mUser = $this->container->fabricate('factory.models', 'Users');
+            $mSession = $this->container->fabricate('factory.models', 'Session');
             try {
-                $user = new User($mUser, $mSession);
+                $user = $this->container->get('user');
                 $handled = $form->handleRequest($this->request);
                 $user->logIn($handled);
                 $this->redirect();
