@@ -1,0 +1,16 @@
+{
+    "name": "niyaz/blog",
+    "authors": [
+        {
+            "name": "Niyaz",
+            "email": "niyaz.yarmukhamedov@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Phpblog\\": "src/"
+        }
+    }
+}
