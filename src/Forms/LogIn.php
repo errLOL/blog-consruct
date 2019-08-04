@@ -22,7 +22,7 @@ class LogIn extends Form
             [
                 'name' => 'remember',
                 'type' => 'checkbox',
-                'value' => 'Запомнить'
+                'label' => ['text' => 'Remember me']
             ],
             [
                 'type' => 'submit',

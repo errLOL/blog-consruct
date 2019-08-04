@@ -6,7 +6,7 @@ use Phpblog\Core\Request;
 
 abstract class Form
 {
-    public $fields;
+    protected $fields;
     protected $method;
     protected $action;
     protected $formName;
@@ -42,18 +42,21 @@ abstract class Form
         return hash('ripemd160', $str);
     }
 
-    public function handleRequest(Request $request)
+    public function handleRequest(Request $request, $checkSing = true)
     {
         $fields = [];
-        if ($request->post('sign') !== $this->getSign()) {
+        if ($request->post('sign') !== $this->getSign() && $checkSing) {
             throw new InvalidDataException(['sing' => ['not found form']]);
         }
 
-        foreach ($this->getFields() as $field) {
+        foreach ($this->getFields() as $key => $field) {
             if (!isset($field['name'])) {
                 continue;
             }
             if ($request->post($field['name']) !== null) {
+                if ($field['name'] !== 'password') {
+                    $this->fields[$key]['value'] = $request->post($field['name']);
+                }
                 $fields[$field['name']] = $request->post($field['name']);
             }
         }

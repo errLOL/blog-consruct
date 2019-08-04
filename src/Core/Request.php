@@ -8,7 +8,7 @@ class Request
     const METHOD_GET = 'GET';
     
     private $get;
-	private $post;
+	public $post;
 	private $server;
 	private $cookie;
 	private $files;

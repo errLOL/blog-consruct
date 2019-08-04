@@ -4,9 +4,9 @@ namespace Phpblog\Controller;
 
 use Phpblog\Core\Exception\InvalidDataException;
 use Phpblog\Core\Exception\ErrorNotFoundException;
-/* use Phpblog\Core\Forms\FormBuilder;
-use Phpblog\Forms\SignUp;
-use Phpblog\Forms\LogIn; */
+use Phpblog\Core\Forms\FormBuilder;
+use Phpblog\Forms\AddNews;
+use Phpblog\Forms\EditNews;
 
 class NewsController extends BasicController
 {
@@ -34,33 +34,20 @@ class NewsController extends BasicController
             throw new ErrorNotFoundException();
         }
         $this->title = 'Добавить';
+        $form = new AddNews();
+        $formBuilder = new FormBuilder($form);
 
         if($this->request->is_post()) {
-            $title =  $this->request->post('title');
-            $text =  $this->request->post('text');
-            $mpost = $this->container->fabricate('factory.models', 'News');
-
             try {
-                $loc = $mpost->add(compact('title','text'));
+                $mpost = $this->container->fabricate('factory.models', 'News');
+                $handled = $form->handleRequest($this->request);
+                $loc = $mpost->add($handled);
                 $this->redirect(sprintf('post/%s', $loc));
             } catch (InvalidDataException $e) {
-                $titleErr = $e->getErrors()['title'] ?? '';
-                $textErr = $e->getErrors()['text'] ?? '';
+                $form->addErrors($e->getErrors());
             }
         }
-        else {
-            $title = '';
-            $text = '';
-            $titleErr = '';
-            $textErr = '';
-        }
-
-        $this->content = $this->build('v_add', [
-            'title' => $title,
-            'text' => $text,
-            'titleErr' => $titleErr,
-            'textErr' => $textErr
-        ]);
+        $this->content = $this->build('v_add', ['form' => $formBuilder]);
     }
 
     public function editAction()
@@ -74,32 +61,25 @@ class NewsController extends BasicController
         $this->title = 'Редактирование статьи';
         $mpost = $this->container->fabricate('factory.models', 'News');
         $post = $mpost->getOnce(['id_news' => $id]);
-
         if(empty($post)) {
             throw new ErrorNotFoundException();
         }
+        $_POST['title'] = $post['title'];
+        $_POST['text'] = $post['text'];
+        $form = new EditNews();
+        $formBuilder = new FormBuilder($form);
+        $handled = $form->handleRequest($this->request, false);
         
         if($this->request->is_post()) {
-            $title = $this->request->post('title');
-            $text = $this->request->post('text');
-
             try {
-                $mpost->update(compact('title','text'), "id_news = $id");
+                $handled = $form->handleRequest($this->request);
+                $mpost->update($handled, "id_news = $id");
                 $this->redirect(sprintf('post/%s', $id));
             } catch (InvalidDataException $e) {
-                $titleErr = $e->getErrors()['title'] ?? '';
-                $textErr = $e->getErrors()['text'] ?? '';
+                $form->addErrors($e->getErrors());
             }
         }
-        else {
-            $titleErr = '';
-            $textErr = '';
-        }
-        $this->content = $this->build('v_edit', [
-            'post' => $post,
-            'titleErr' => $titleErr,
-            'textErr' => $textErr
-        ]);
+        $this->content = $this->build('v_edit', ['form' => $formBuilder]);
     }
 
     public function deleteAction()

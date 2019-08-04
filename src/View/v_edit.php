@@ -2,23 +2,12 @@
     <div class="form__block">
         <h2 class="form__title">Редактировать статью</h2>
         <div class="form__form">
-            <!-- action="php/mail.php" -->
-            <form  class="contact-form" method="POST">
-                <input type="text" class="form__input" placeholder="Название статьи" name="title" value="<?=$post['title']?>">
-                <? if ($titleErr != '') :
-                   foreach ($titleErr as $key => $value) : ?>
-                       <div class="error"><?=$value?></div>
-                   <?endforeach;
-                endif;?>
-                <div class="form__bg-pencil">
-                    <textarea class="form__textarea" name="text" placeholder="Ваше сообщение"><?=$post['text']?></textarea>
-                </div>
-                <? if ($textErr != '') :
-                   foreach ($textErr as $key => $value) : ?>
-                       <div class="error"><?=$value?></div>
-                   <?endforeach;
-                endif;?>
-                <input type="submit" class="form__submit"  value="Редактировать">
+            <form  class="contact-form" <?=$form->method();?>>   
+                <? echo $form->inputSign();
+                foreach ($form->fields() as $input) {
+                    echo $input;
+                }
+                ?>
             </form>
             <a href="<?= ROOT?>">Назад</a>
         </div> 

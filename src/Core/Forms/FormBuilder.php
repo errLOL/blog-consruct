@@ -15,6 +15,7 @@ class FormBuilder
         if ($method === null) {
             $method = 'GET';
         }
+
         return sprintf('method="%s"', $method);
     }
 
@@ -31,15 +32,32 @@ class FormBuilder
     public function input(array $attr)
     {
         $errors = '';
+        $label = null;
 
         if (isset($attr['errors'])) {
             $class = $attr['class'] ?? '';
             $attr['class'] = sprintf('%s error', $class);
             $errors = '<div class="error_message">' . implode('</div><div class="error_message">', $attr['errors']) . '</div>';
-            unset($attr['errors']);
-            
+            unset($attr['errors']); 
         }
-        $input = sprintf('<input %s>%s', $this->buildAttributes($attr), $errors);
+
+        if (isset($attr['label'])) {
+            $label = $attr['label'];
+            unset($attr['label']);
+        }
+        
+        if (isset($attr['type']) && $attr['type'] === 'textarea') {
+            $value = $attr['value'] ?? '';
+            unset($attr['value']);
+            $input = sprintf('<textarea %s>%s</textarea>%s', $this->buildAttributes($attr), $value, $errors);
+        }else {
+            $input = sprintf('<input %s>%s', $this->buildAttributes($attr), $errors);
+        }
+    
+        if ($label) {
+            $input = sprintf('<label %s>%s %s</label>', $this->buildAttributes($label), $input, $label['text']);
+        }
+
         return $input;
     }
 
@@ -47,6 +65,9 @@ class FormBuilder
     {
         $arr = [];
         foreach ($attr as $attribute => $value) {
+            if($attribute === 'text') {
+                continue;
+            }
             $arr[] = sprintf('%s = "%s"', $attribute, $value);
         }
         
@@ -55,6 +76,7 @@ class FormBuilder
 
     public function inputSign()
     {
+
         return $this->input([
             'name' => 'sign',
             'type' => 'hidden',
